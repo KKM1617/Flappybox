@@ -1,160 +1,82 @@
-const startScreen = document.getElementById('startScreen');
-const gameOverScreen = document.getElementById('gameOverScreen');
-const unlockPopup = document.getElementById('unlockPopup');
-const startBtn = document.getElementById('startBtn');
-const restartBtn = document.getElementById('restartBtn');
-const homeBtn = document.getElementById('homeBtn');
-const closeUnlock = document.getElementById('closeUnlock');
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('gameCanvas'),
+      ctx = canvas.getContext('2d'),
+      scoreEl = document.getElementById('score');
+let bird = { x: 50, y: 240, w: 20, h: 20, vy: 0 },
+    pipes = [], frame = 0, score = 0, playing = false;
+const gravity = 0.5, jump = -8, pipeGap = 120, pipeSpeed = 2;
 
-let bird, pipes, score, level, speed, highScore, stars, unlocked;
-
-const gravity = 0.5;
-const jumpStrength = -8;
-
-function initGame() {
-  bird = { x: 80, y: 300, width: 30, height: 30, dy: 0, color: 'cyan' };
-  pipes = [];
-  score = 0;
-  level = 1;
-  speed = 2;
-  stars = Array.from({ length: 50 }, () => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 2
-  }));
-  unlocked = localStorage.getItem('unlocked') || 0;
+function reset() {
+  bird.y = 240; bird.vy = 0;
+  pipes = []; frame = 0; score = 0; playing = true;
+  scoreEl.textContent = 'Score: ' + score;
 }
 
-function startGame() {
-  startScreen.classList.add('hidden');
-  gameOverScreen.classList.add('hidden');
-  unlockPopup.classList.add('hidden');
-  canvas.style.display = 'block';
-  initGame();
-  loop();
-}
-
-function loop() {
-  update();
-  draw();
-  requestAnimationFrame(loop);
+function spawnPipe() {
+  const topH = Math.random() * (canvas.height - pipeGap - 40) + 20;
+  pipes.push({ x: canvas.width, y: 0, w: 40, h: topH });
+  pipes.push({ x: canvas.width, y: topH + pipeGap, w: 40, h: canvas.height - (topH + pipeGap) });
 }
 
 function update() {
-  bird.dy += gravity;
-  bird.y += bird.dy;
-
-  if (bird.y + bird.height > canvas.height || bird.y < 0) {
-    gameOver();
-  }
-
-  pipes.forEach(pipe => {
-    pipe.x -= speed;
-    if (collide(bird, pipe)) gameOver();
-  });
-
-  pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
-
-  if (Math.random() < 0.02) {
-    const gap = 120;
-    const topHeight = Math.random() * (canvas.height - gap - 100);
-    pipes.push({ x: canvas.width, y: 0, width: 40, height: topHeight });
-    pipes.push({ x: canvas.width, y: topHeight + gap, width: 40, height: canvas.height - topHeight - gap });
-  }
-
-  stars.forEach(star => {
-    star.x -= 0.5;
-    if (star.x < 0) {
-      star.x = canvas.width;
-      star.y = Math.random() * canvas.height;
+  if (!playing) return;
+  frame++;
+  // bird physics
+  bird.vy += gravity;
+  bird.y += bird.vy;
+  // spawn pipes every 90 frames
+  if (frame % 90 === 0) spawnPipe();
+  // move pipes & check pass/collision
+  pipes.forEach((p, i) => {
+    p.x -= pipeSpeed;
+    // passed?
+    if (!p.counted && p.y == 0 && bird.x > p.x + p.w) {
+      score++; scoreEl.textContent = 'Score: ' + score; p.counted = true;
     }
+    // collision
+    if (bird.x < p.x + p.w && bird.x + bird.w > p.x &&
+        bird.y < p.y + p.h && bird.y + bird.h > p.y) {
+      playing = false;
+    }
+    // remove off-screen
+    if (p.x + p.w < 0) pipes.splice(i, 1);
   });
-
-  score++;
-  levelUp();
+  // ground / ceiling
+  if (bird.y + bird.h > canvas.height || bird.y < 0) playing = false;
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = 'black';
+  // clear
+  ctx.fillStyle = '#70c5ce';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw Stars
-  ctx.fillStyle = '#0ff';
-  stars.forEach(star => {
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  // Draw Bird
-  ctx.fillStyle = bird.color;
-  ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-
-  // Draw Pipes
-  ctx.fillStyle = 'lime';
-  pipes.forEach(pipe => {
-    ctx.fillRect(pipe.x, pipe.y, pipe.width, pipe.height);
-  });
-
-  // Draw Score
-  ctx.fillStyle = 'white';
-  ctx.font = '24px Orbitron';
-  ctx.fillText('Score: ' + score, 10, 30);
+  // bird
+  ctx.fillStyle = '#ff0';
+  ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
+  // pipes
+  ctx.fillStyle = '#0f0';
+  pipes.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+  if (playing) requestAnimationFrame(loop);
+  else showGameOver();
 }
 
-function levelUp() {
-  if (score === 300) {
-    speed = 3;
-    level = 2;
-  }
-  if (score === 600) {
-    speed = 4;
-    level = 3;
-    if (unlocked < 1) {
-      unlocked = 1;
-      localStorage.setItem('unlocked', unlocked);
-      showUnlock();
-    }
-  }
+function loop() { update(); draw(); }
+
+function flap() {
+  if (!playing) return reset(), loop();
+  bird.vy = jump;
 }
 
-function gameOver() {
-  cancelAnimationFrame(loop);
-  canvas.style.display = 'none';
-  gameOverScreen.classList.remove('hidden');
-
-  document.getElementById('currentScore').innerText = `Score: ${score}`;
-  highScore = Math.max(score, localStorage.getItem('highScore') || 0);
-  localStorage.setItem('highScore', highScore);
-  document.getElementById('highScore').innerText = `High Score: ${highScore}`;
+function showGameOver() {
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fff';
+  ctx.font = '32px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 20);
+  ctx.font = '20px sans-serif';
+  ctx.fillText('Click to Restart', canvas.width / 2, canvas.height / 2 + 20);
 }
 
-function showUnlock() {
-  unlockPopup.classList.remove('hidden');
-}
-
-function collide(bird, pipe) {
-  return bird.x < pipe.x + pipe.width &&
-         bird.x + bird.width > pipe.x &&
-         bird.y < pipe.y + pipe.height &&
-         bird.y + bird.height > pipe.y;
-}
-
-canvas.addEventListener('click', () => {
-  bird.dy = jumpStrength;
-});
-
-startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', startGame);
-homeBtn.addEventListener('click', () => {
-  startScreen.classList.remove('hidden');
-  gameOverScreen.classList.add('hidden');
-});
-closeUnlock.addEventListener('click', () => {
-  unlockPopup.classList.add('hidden');
-});
-      
+// start
+canvas.addEventListener('click', flap);
+document.addEventListener('keydown', e => e.code === 'Space' && flap());
+reset(); loop();
