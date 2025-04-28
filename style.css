@@ -1,0 +1,50 @@
+/* --- same background and general styling as before --- */
+
+.hidden {
+    display: none;
+}
+
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.screen h1 {
+    font-size: 48px;
+    color: #00ffe5;
+    text-shadow: 0 0 10px #00ffe5;
+}
+
+.screen button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    background: #00ffea;
+    color: black;
+    cursor: pointer;
+    box-shadow: 0 0 10px #00ffe5;
+}
+
+.popup {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ff00ff;
+    padding: 20px;
+    border-radius: 15px;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 0 20px #ff00ff;
+    z-index: 10;
+}
