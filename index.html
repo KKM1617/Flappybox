@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neon Flappy Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="background">
+    <div class="stars"></div>
+    <div class="grid"></div>
+  </div>
+
+  <div id="startScreen" class="screen">
+    <h1>Neon Flappy</h1>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <div id="game" class="hidden">
+    <div id="bird"></div>
+    <div id="pipe"></div>
+    <div id="pipe2"></div>
+  </div>
+
+  <div id="score" class="hidden">Score: 0 | High Score: 0</div>
+
+  <div id="gameOverScreen" class="screen hidden">
+    <h1>Game Over!</h1>
+    <p id="finalScore"></p>
+    <button id="restartBtn">Restart</button>
+  </div>
+
+  <div id="unlockPopup" class="popup hidden">
+    <p>New Bird Unlocked!</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
+                          
