@@ -1,13 +1,32 @@
-/* center the canvas, sky-blue background */
 html, body {
   margin: 0;
   padding: 0;
-  background: #70c5ce;
+  background: #0d0d0d;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+#adContainer {
+  margin: 10px auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 60px;
 }
+
+#score {
+  margin-top: 5px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  color: #ffffff;
+  text-shadow: 0 0 10px #fff, 0 0 20px #ff007c;
+}
+
 canvas {
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  margin-top: 10px;
+  box-shadow: 0 0 20px rgba(0,255,242,0.7), 0 0 40px rgba(255,0,124,0.5);
+  border-radius: 8px;
 }
