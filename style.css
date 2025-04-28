@@ -1,22 +1,13 @@
-body, html {
+/* center the canvas, sky-blue background */
+html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   background: #70c5ce;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
-
 canvas {
-  display: block;
-  margin: 0 auto;
-  background: #70c5ce;
-}
-
-#score {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font: 24px sans-serif;
-  color: #fff;
-  text-shadow: 1px 1px 2px #000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
