@@ -2,41 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Neon Flappy Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Flappy</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="background">
-    <div class="stars"></div>
-    <div class="grid"></div>
-  </div>
 
-  <div id="startScreen" class="screen">
-    <h1>Neon Flappy</h1>
-    <button id="startBtn">Start Game</button>
-  </div>
+<!-- Start Screen -->
+<div id="startScreen" class="screen">
+  <h1>Neon Flappy</h1>
+  <button id="startBtn">Play</button>
+</div>
 
-  <div id="game" class="hidden">
-    <div id="bird"></div>
-    <div id="pipe"></div>
-    <div id="pipe2"></div>
-  </div>
+<!-- Game Canvas -->
+<canvas id="gameCanvas" width="400" height="600"></canvas>
 
-  <div id="score" class="hidden">Score: 0 | High Score: 0</div>
+<!-- Game Over Screen -->
+<div id="gameOverScreen" class="screen hidden">
+  <h1>Game Over!</h1>
+  <p id="currentScore">Score: 0</p>
+  <p id="highScore">High Score: 0</p>
+  <button id="restartBtn">Restart</button>
+  <button id="homeBtn">Home</button>
+</div>
 
-  <div id="gameOverScreen" class="screen hidden">
-    <h1>Game Over!</h1>
-    <p id="finalScore"></p>
-    <button id="restartBtn">Restart</button>
-  </div>
+<!-- Unlock Bird Popup -->
+<div id="unlockPopup" class="popup hidden">
+  <h2>New Bird Unlocked!</h2>
+  <button id="closeUnlock">Awesome!</button>
+</div>
 
-  <div id="unlockPopup" class="popup hidden">
-    <p>New Bird Unlocked!</p>
-  </div>
-
-  <script src="script.js"></script>
+<script src="game.js"></script>
 </body>
-
 </html>
-                          
