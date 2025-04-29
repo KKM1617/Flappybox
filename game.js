@@ -4,7 +4,6 @@ const scoreEl = document.getElementById("score");
 const music = document.getElementById("bgMusic");
 const leaderboardBtn = document.getElementById("leaderboardButton");
 
-// Ensure music plays after user interacts
 document.addEventListener("click", () => {
   if (music.paused || music.muted) {
     music.muted = false;
@@ -14,7 +13,7 @@ document.addEventListener("click", () => {
 
 music.volume = 0.3;
 
-// Ask for player name if not saved
+// Ask for name only once
 let playerName = localStorage.getItem("flappyPlayerName");
 if (!playerName) {
   playerName = prompt("Enter your unique player name:")?.trim();
