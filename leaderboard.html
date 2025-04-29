@@ -29,13 +29,38 @@
   <h1>Top Players</h1>
   <ol id="leaderboardList"></ol>
 
-  <script>
-    const scores = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    const list = document.getElementById("leaderboardList");
-    scores.forEach((entry, i) => {
-      const li = document.createElement("li");
-      li.textContent = `${i + 1}. ${entry.name}: ${entry.score}`;
-      list.appendChild(li);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEvNPmZd9-C4FJa7Fp_8hHeLnDkGG4CGg",
+      authDomain: "reselling-app-3c8fe.firebaseapp.com",
+      projectId: "reselling-app-3c8fe",
+      storageBucket: "reselling-app-3c8fe.firebasestorage.app",
+      messagingSenderId: "661888641900",
+      appId: "1:661888641900:web:93e70a97ce9114ec7c6149",
+      databaseURL: "https://reselling-app-3c8fe-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, "leaderboard");
+
+    get(dbRef).then(snapshot => {
+      const data = snapshot.val();
+      const list = document.getElementById("leaderboardList");
+      if (!data) {
+        list.innerHTML = "<li>No scores yet.</li>";
+        return;
+      }
+      const entries = Object.values(data);
+      entries.sort((a, b) => b.score - a.score);
+      entries.slice(0, 10).forEach((entry, i) => {
+        const li = document.createElement("li");
+        li.textContent = `${i + 1}. ${entry.name}: ${entry.score}`;
+        list.appendChild(li);
+      });
     });
   </script>
 </body>
