@@ -23,11 +23,27 @@
       font-size: 18px;
       text-shadow: 0 0 5px #0ff;
     }
+    #adminBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #00fff2;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 0 10px #00fff2;
+    }
+    #adminBtn:hover {
+      background: #00e6cc;
+      box-shadow: 0 0 20px #00e6cc;
+    }
   </style>
 </head>
 <body>
   <h1>Top Players</h1>
   <ol id="leaderboardList"></ol>
+  <button id="adminBtn" onclick="window.open('admin.html','_blank')">Admin Login</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
