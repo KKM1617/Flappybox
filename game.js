@@ -126,9 +126,10 @@ function showGameOver() {
   ctx.shadowColor = "#fff";
   ctx.shadowBlur = 20;
   ctx.font = "36px Orbitron";
-  ctx.fillText("Game Over", W / 2, H / 2 - 20);
+  ctx.fillText("Game Over", W / 2, H / 2 - 30);
   ctx.font = "20px Orbitron";
-  ctx.fillText("Click to Restart", W / 2, H / 2 + 20);
+  ctx.fillText("Click to Restart", W / 2, H / 2 + 10);
+  ctx.fillText("Press L to View Leaderboard", W / 2, H / 2 + 40);
   ctx.shadowBlur = 0;
 }
 
@@ -152,7 +153,11 @@ function displayLeaderboard() {
 }
 
 canvas.addEventListener("click", flap);
-document.addEventListener("keydown", (e) => e.code === "Space" && flap());
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") flap();
+  if (e.key.toLowerCase() === "l") window.open("leaderboard.html", "_blank");
+});
 
 reset();
 loop();
+                
