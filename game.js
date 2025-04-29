@@ -1,13 +1,15 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const music = document.getElementById("bgMusic");
+music.volume = 0.3;
 
 const W = canvas.width, H = canvas.height;
-let bird, pipes, stars, frame, score, playing;
+let bird, pipes, stars, frame, score, playing, pulsePhase = 0;
 const gravity = 0.4, jumpStrength = -7;
 
 function reset() {
-  bird = { x: 50, y: H/2, w: 34, h: 24, dy: 0 };
+  bird = { x: 50, y: H / 2, w: 34, h: 24, dy: 0 };
   pipes = [];
   stars = Array.from({ length: 80 }, () => ({
     x: Math.random() * W,
@@ -18,6 +20,7 @@ function reset() {
   score = 0;
   playing = true;
   scoreEl.textContent = `Score: ${score}`;
+  displayLeaderboard();
 }
 
 function spawnPipe() {
@@ -29,6 +32,7 @@ function spawnPipe() {
 function update() {
   if (!playing) return;
   frame++;
+  pulsePhase += 0.1;
   bird.dy += gravity;
   bird.y += bird.dy;
 
@@ -52,14 +56,14 @@ function update() {
 
 function draw() {
   const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrad.addColorStop(0, '#141e30');
-  bgGrad.addColorStop(1, '#0d0d0d');
+  bgGrad.addColorStop(0, "#141e30");
+  bgGrad.addColorStop(1, "#0d0d0d");
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.fillStyle = '#fff';
-  stars.forEach(s => {
-    ctx.globalAlpha = Math.random() * 0.5 + 0.2;
+  stars.forEach((s) => {
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = "#fff";
     ctx.beginPath();
     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     ctx.fill();
@@ -68,30 +72,31 @@ function draw() {
   });
   ctx.globalAlpha = 1;
 
-  pipes.forEach(p => {
+  pipes.forEach((p) => {
     const grad = ctx.createLinearGradient(p.x, 0, p.x, p.topH);
-    grad.addColorStop(0, '#00fff2');
-    grad.addColorStop(1, '#008c85');
+    grad.addColorStop(0, "#00fff2");
+    grad.addColorStop(1, "#008c85");
     ctx.fillStyle = grad;
-    ctx.shadowColor = '#00fff2';
+    ctx.shadowColor = "#00fff2";
     ctx.shadowBlur = 15;
     ctx.fillRect(p.x, 0, 52, p.topH);
     ctx.fillRect(p.x, p.topH + 110, 52, H - p.topH - 110);
   });
   ctx.shadowBlur = 0;
 
+  const pulse = Math.sin(pulsePhase) * 3;
   ctx.save();
-  ctx.fillStyle = '#ff007c';
-  ctx.shadowColor = '#ff007c';
-  ctx.shadowBlur = 20;
-  ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
+  ctx.fillStyle = "#ff007c";
+  ctx.shadowColor = "#ff007c";
+  ctx.shadowBlur = 20 + pulse * 2;
+  ctx.fillRect(bird.x - pulse / 2, bird.y - pulse / 2, bird.w + pulse, bird.h + pulse);
   ctx.restore();
 
-  ctx.shadowColor = '#fff';
+  ctx.shadowColor = "#fff";
   ctx.shadowBlur = 10;
-  ctx.fillStyle = '#fff';
-  ctx.font = '32px Orbitron';
-  ctx.textAlign = 'center';
+  ctx.fillStyle = "#fff";
+  ctx.font = "32px Orbitron";
+  ctx.textAlign = "center";
   ctx.fillText(score, W / 2, 60);
   ctx.shadowBlur = 0;
 
@@ -106,6 +111,7 @@ function loop() {
 
 function flap() {
   if (!playing) {
+    updateLeaderboard(score);
     reset();
     loop();
   } else {
@@ -114,21 +120,39 @@ function flap() {
 }
 
 function showGameOver() {
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillStyle = "rgba(0,0,0,0.6)";
   ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#fff';
-  ctx.shadowColor = '#fff';
+  ctx.fillStyle = "#fff";
+  ctx.shadowColor = "#fff";
   ctx.shadowBlur = 20;
-  ctx.font = '36px Orbitron';
-  ctx.fillText('Game Over', W / 2, H / 2 - 20);
-  ctx.font = '20px Orbitron';
-  ctx.fillText('Click to Restart', W / 2, H / 2 + 20);
+  ctx.font = "36px Orbitron";
+  ctx.fillText("Game Over", W / 2, H / 2 - 20);
+  ctx.font = "20px Orbitron";
+  ctx.fillText("Click to Restart", W / 2, H / 2 + 20);
   ctx.shadowBlur = 0;
 }
 
-canvas.addEventListener('click', flap);
-document.addEventListener('keydown', e => e.code === 'Space' && flap());
+function updateLeaderboard(newScore) {
+  let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+  leaderboard.push(newScore);
+  leaderboard.sort((a, b) => b - a);
+  leaderboard = leaderboard.slice(0, 5);
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+}
+
+function displayLeaderboard() {
+  const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+  const list = document.getElementById("leaderboardList");
+  list.innerHTML = "";
+  leaderboard.forEach((score, i) => {
+    const li = document.createElement("li");
+    li.textContent = `${i + 1}. Score: ${score}`;
+    list.appendChild(li);
+  });
+}
+
+canvas.addEventListener("click", flap);
+document.addEventListener("keydown", (e) => e.code === "Space" && flap());
 
 reset();
 loop();
-          
