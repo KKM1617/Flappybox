@@ -1,33 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Neon Flappy Bird</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- Ad at top (safe) -->
-<div id="adContainer"></div>
+  <!-- Ad Banner -->
+  <div id="adContainer"></div>
 
-<div id="score">Score: 0</div>
-<canvas id="gameCanvas" width="288" height="512"></canvas>
+  <!-- Score Display -->
+  <div id="score">Score: 0</div>
 
-<!-- Game Script -->
-<script src="game.js"></script>
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas" width="288" height="512"></canvas>
 
-<!-- Ad Script -->
-<script type="text/javascript">
-	atOptions = {
-		'key' : '7cd9b8b6803e07e1d0fb1755d163c9e4',
-		'format' : 'iframe',
-		'height' : 50,
-		'width' : 320,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/7cd9b8b6803e07e1d0fb1755d163c9e4/invoke.js"></script>
+  <!-- Leaderboard Section -->
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ol id="leaderboardList"></ol>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" loop autoplay>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_1962a744a8.mp3?filename=tense-suspense-loop-9733.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- Game Logic -->
+  <script src="game.js"></script>
+
+  <!-- Ad Script -->
+  <script type="text/javascript">
+    atOptions = {
+      key: "7cd9b8b6803e07e1d0fb1755d163c9e4",
+      format: "iframe",
+      height: 50,
+      width: 320,
+      params: {},
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/7cd9b8b6803e07e1d0fb1755d163c9e4/invoke.js"></script>
 
 </body>
 </html>
