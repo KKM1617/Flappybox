@@ -164,11 +164,14 @@ function showGameOver() {
 
 function saveScore(score) {
   const record = { name: playerName, score };
-  let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  leaderboard.push(record);
-  leaderboard.sort((a, b) => b.score - a.score);
-  leaderboard = leaderboard.slice(0, 5);
-  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+  if (window.firebaseDatabase && window.firebaseRef && window.firebasePush) {
+    const db = window.firebaseDatabase;
+    const ref = window.firebaseRef;
+    const push = window.firebasePush;
+    push(ref(db, "leaderboard"), record);
+  } else {
+    console.warn("Firebase not available. Score not saved.");
+  }
 }
 
 canvas.addEventListener("click", flap);
