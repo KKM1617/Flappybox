@@ -2,6 +2,15 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 const music = document.getElementById("bgMusic");
+
+// Unmute and ensure music plays after user interaction
+document.addEventListener("click", () => {
+  if (music.paused || music.muted) {
+    music.muted = false;
+    music.play().catch(() => {});
+  }
+}, { once: true });
+
 music.volume = 0.3;
 
 const W = canvas.width, H = canvas.height;
@@ -20,13 +29,20 @@ function reset() {
   score = 0;
   playing = true;
   scoreEl.textContent = `Score: ${score}`;
-  displayLeaderboard();
+  document.getElementById("leaderboardButton").style.display = "none";
 }
 
 function spawnPipe() {
   const gap = 110;
   const topH = Math.random() * (H - gap - 120) + 40;
   pipes.push({ x: W, topH, passed: false });
+}
+
+function getBackgroundColors() {
+  if (score < 10) return ["#141e30", "#0d0d0d"];
+  else if (score < 30) return ["#2c003e", "#0d0d0d"];
+  else if (score < 60) return ["#3e0000", "#0d0d0d"];
+  else return ["#004d00", "#0d0d0d"];
 }
 
 function update() {
@@ -55,9 +71,10 @@ function update() {
 }
 
 function draw() {
+  const [colorTop, colorBottom] = getBackgroundColors();
   const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrad.addColorStop(0, "#141e30");
-  bgGrad.addColorStop(1, "#0d0d0d");
+  bgGrad.addColorStop(0, colorTop);
+  bgGrad.addColorStop(1, colorBottom);
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
@@ -111,7 +128,6 @@ function loop() {
 
 function flap() {
   if (!playing) {
-    updateLeaderboard(score);
     reset();
     loop();
   } else {
@@ -128,36 +144,16 @@ function showGameOver() {
   ctx.font = "36px Orbitron";
   ctx.fillText("Game Over", W / 2, H / 2 - 30);
   ctx.font = "20px Orbitron";
-  ctx.fillText("Click to Restart", W / 2, H / 2 + 10);
-  ctx.fillText("Press L to View Leaderboard", W / 2, H / 2 + 40);
+  ctx.fillText("Tap anywhere to Restart", W / 2, H / 2 + 10);
   ctx.shadowBlur = 0;
-}
 
-function updateLeaderboard(newScore) {
-  let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  leaderboard.push(newScore);
-  leaderboard.sort((a, b) => b - a);
-  leaderboard = leaderboard.slice(0, 5);
-  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-}
-
-function displayLeaderboard() {
-  const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  const list = document.getElementById("leaderboardList");
-  list.innerHTML = "";
-  leaderboard.forEach((score, i) => {
-    const li = document.createElement("li");
-    li.textContent = `${i + 1}. Score: ${score}`;
-    list.appendChild(li);
-  });
+  document.getElementById("leaderboardButton").style.display = "block";
 }
 
 canvas.addEventListener("click", flap);
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") flap();
-  if (e.key.toLowerCase() === "l") window.open("leaderboard.html", "_blank");
+document.getElementById("leaderboardButton").addEventListener("click", () => {
+  window.open("leaderboard.html", "_blank");
 });
 
 reset();
 loop();
-                
