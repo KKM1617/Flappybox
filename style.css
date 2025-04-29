@@ -7,10 +7,11 @@ html, body {
   flex-direction: column;
   align-items: center;
   overflow-x: hidden;
+  font-family: 'Orbitron', sans-serif;
 }
 
 #adContainer {
-  margin: 10px auto;
+  margin: 10px auto 5px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,15 +19,35 @@ html, body {
 }
 
 #score {
-  margin-top: 5px;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 28px;
+  margin: 10px 0 5px;
+  font-size: 24px;
   color: #ffffff;
   text-shadow: 0 0 10px #fff, 0 0 20px #ff007c;
 }
 
 canvas {
-  margin-top: 10px;
   box-shadow: 0 0 20px rgba(0,255,242,0.7), 0 0 40px rgba(255,0,124,0.5);
   border-radius: 8px;
+}
+
+#leaderboard {
+  margin-top: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+#leaderboard h2 {
+  font-size: 22px;
+  text-shadow: 0 0 10px #0ff;
+}
+
+#leaderboard ol {
+  list-style: none;
+  padding: 0;
+}
+
+#leaderboard li {
+  margin: 4px 0;
+  font-size: 16px;
+  text-shadow: 0 0 5px #0ff;
 }
