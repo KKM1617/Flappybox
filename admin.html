@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Flappybox</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #00fff2;
+    }
+    table {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      box-shadow: 0 0 20px #00fff2;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #00fff2;
+    }
+    th {
+      background-color: #001f1f;
+    }
+    td {
+      background-color: #002a2a;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin Leaderboard</h1>
+  <div id="status">Checking credentials...</div>
+  <table id="adminTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Highest Score</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script type="module">
+    const input = prompt("Enter admin password:");
+    const correctPassword = "flappy@admin";
+
+    if (input !== correctPassword) {
+      document.getElementById("status").textContent = "Access Denied";
+      throw new Error("Unauthorized");
+    }
+
+    document.getElementById("status").textContent = "Loading data...";
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDLdsLjz-Yjbzs2cktR5XAZRaxXMQJPrII",
+      authDomain: "flappyclipy.firebaseapp.com",
+      databaseURL: "https://flappyclipy-default-rtdb.firebaseio.com",
+      projectId: "flappyclipy",
+      storageBucket: "flappyclipy.firebasestorage.app",
+      messagingSenderId: "536413783206",
+      appId: "1:536413783206:web:1a5406ef29236c8f686067"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, "leaderboard");
+
+    get(dbRef).then(snapshot => {
+      const data = snapshot.val();
+      const list = document.querySelector("#adminTable tbody");
+      if (!data) {
+        document.getElementById("status").textContent = "No data found.";
+        return;
+      }
+
+      const scoresByUser = {};
+
+      Object.values(data).forEach(entry => {
+        if (!scoresByUser[entry.name] || entry.score > scoresByUser[entry.name]) {
+          scoresByUser[entry.name] = entry.score;
+        }
+      });
+
+      const sorted = Object.entries(scoresByUser)
+        .sort((a, b) => b[1] - a[1]);
+
+      sorted.forEach(([name, score]) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${name}</td><td>${score}</td>`;
+        list.appendChild(row);
+      });
+
+      document.getElementById("adminTable").style.display = "table";
+      document.getElementById("status").style.display = "none";
+    });
+  </script>
+</body>
+</html>
