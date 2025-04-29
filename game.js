@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 const music = document.getElementById("bgMusic");
 const leaderboardBtn = document.getElementById("leaderboardButton");
+const sharePanel = document.getElementById("shareButtons");
+window.shareMessage = "";
 
 let playerName = localStorage.getItem("flappyPlayerName");
 if (!playerName) {
@@ -46,6 +48,7 @@ function reset() {
   playing = true;
   scoreEl.textContent = `Score: ${score}`;
   leaderboardBtn.style.display = "none";
+  sharePanel.style.display = "none";
   storyState.typingText = "";
   storyState.bubble = "";
   storyState.typingIndex = 0;
@@ -194,10 +197,23 @@ function showGameOver() {
   ctx.font = "20px Orbitron";
   ctx.fillText("Tap to Restart", W / 2, H / 2 + 10);
   ctx.shadowBlur = 0;
+
   leaderboardBtn.style.display = "block";
+  sharePanel.style.display = "block";
+
+  const chapter = score >= 50 ? "The Fall Box"
+                : score >= 30 ? "The Ascent Box"
+                : score >= 10 ? "The Awakening Box"
+                : "The First Box";
+
+  window.shareMessage =
+`I have checked a great good mast re devlopment game and happy to share.
+I’ve scored ${score} and opened ${chapter}.
+Can you beat my journey? My name is ${playerName}.
+Play now: https://reselling-gamma.vercel.app/
+Check the leaderboard too!`;
 }
 
-// Save only if score is higher
 function saveScore(score) {
   if (!window.firebaseDatabase || !window.firebaseRef) return;
 
@@ -228,6 +244,19 @@ function saveScore(score) {
   });
 }
 
+window.shareNow = function () {
+  if (navigator.share) {
+    navigator.share({
+      title: "Flappybox Challenge",
+      text: window.shareMessage,
+      url: "https://reselling-gamma.vercel.app/"
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.shareMessage);
+    alert("Copied to clipboard!");
+  }
+};
+
 canvas.addEventListener("click", flap);
 leaderboardBtn.addEventListener("click", () => {
   window.open("leaderboard.html", "_blank");
@@ -235,3 +264,4 @@ leaderboardBtn.addEventListener("click", () => {
 
 reset();
 loop();
+  
