@@ -26,15 +26,15 @@
   </style>
 </head>
 <body>
-  <h1>Top Scores</h1>
+  <h1>Top Players</h1>
   <ol id="leaderboardList"></ol>
 
   <script>
     const scores = JSON.parse(localStorage.getItem("leaderboard")) || [];
     const list = document.getElementById("leaderboardList");
-    scores.forEach((s, i) => {
+    scores.forEach((entry, i) => {
       const li = document.createElement("li");
-      li.textContent = `${i + 1}. Score: ${s}`;
+      li.textContent = `${i + 1}. ${entry.name}: ${entry.score}`;
       list.appendChild(li);
     });
   </script>
