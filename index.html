@@ -5,12 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Neon Flappy Bird</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    #shareButtons {
+      display: none;
+      margin-top: 10px;
+    }
+    .share-btn {
+      margin: 5px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #00fff2;
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00fff2;
+    }
+    .share-btn:hover {
+      background-color: #00e6cc;
+    }
+  </style>
 </head>
 <body>
 
   <div id="score">Score: 0</div>
   <canvas id="gameCanvas" width="288" height="512"></canvas>
   <button id="leaderboardButton" style="display: none;">View Leaderboard</button>
+  <div id="shareButtons">
+    <button class="share-btn" onclick="shareNow()">Share Score</button>
+    <button class="share-btn" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=https://reselling-gamma.vercel.app/', '_blank')">LinkedIn</button>
+    <button class="share-btn" onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(window.shareMessage), '_blank')">Twitter</button>
+    <button class="share-btn" onclick="window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(window.shareMessage), '_blank')">WhatsApp</button>
+    <button class="share-btn" onclick="navigator.clipboard.writeText(window.shareMessage);alert('Link copied!')">Copy Link</button>
+  </div>
 
   <audio id="bgMusic" loop autoplay muted>
     <source src="my-music.mp3" type="audio/mpeg" />
