@@ -2,8 +2,9 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 const music = document.getElementById("bgMusic");
+const leaderboardBtn = document.getElementById("leaderboardButton");
 
-// Unmute and ensure music plays after user interaction
+// Ensure music plays after user interacts
 document.addEventListener("click", () => {
   if (music.paused || music.muted) {
     music.muted = false;
@@ -12,6 +13,16 @@ document.addEventListener("click", () => {
 }, { once: true });
 
 music.volume = 0.3;
+
+// Ask for player name if not saved
+let playerName = localStorage.getItem("flappyPlayerName");
+if (!playerName) {
+  playerName = prompt("Enter your unique player name:")?.trim();
+  while (!playerName || playerName.length < 2) {
+    playerName = prompt("Please enter a valid name:")?.trim();
+  }
+  localStorage.setItem("flappyPlayerName", playerName);
+}
 
 const W = canvas.width, H = canvas.height;
 let bird, pipes, stars, frame, score, playing, pulsePhase = 0;
@@ -29,7 +40,7 @@ function reset() {
   score = 0;
   playing = true;
   scoreEl.textContent = `Score: ${score}`;
-  document.getElementById("leaderboardButton").style.display = "none";
+  leaderboardBtn.style.display = "none";
 }
 
 function spawnPipe() {
@@ -71,10 +82,10 @@ function update() {
 }
 
 function draw() {
-  const [colorTop, colorBottom] = getBackgroundColors();
+  const [top, bottom] = getBackgroundColors();
   const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrad.addColorStop(0, colorTop);
-  bgGrad.addColorStop(1, colorBottom);
+  bgGrad.addColorStop(0, top);
+  bgGrad.addColorStop(1, bottom);
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
@@ -128,6 +139,7 @@ function loop() {
 
 function flap() {
   if (!playing) {
+    saveScore(score);
     reset();
     loop();
   } else {
@@ -144,14 +156,23 @@ function showGameOver() {
   ctx.font = "36px Orbitron";
   ctx.fillText("Game Over", W / 2, H / 2 - 30);
   ctx.font = "20px Orbitron";
-  ctx.fillText("Tap anywhere to Restart", W / 2, H / 2 + 10);
+  ctx.fillText("Tap to Restart", W / 2, H / 2 + 10);
   ctx.shadowBlur = 0;
 
-  document.getElementById("leaderboardButton").style.display = "block";
+  leaderboardBtn.style.display = "block";
+}
+
+function saveScore(score) {
+  const record = { name: playerName, score };
+  let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+  leaderboard.push(record);
+  leaderboard.sort((a, b) => b.score - a.score);
+  leaderboard = leaderboard.slice(0, 5);
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 }
 
 canvas.addEventListener("click", flap);
-document.getElementById("leaderboardButton").addEventListener("click", () => {
+leaderboardBtn.addEventListener("click", () => {
   window.open("leaderboard.html", "_blank");
 });
 
