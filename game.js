@@ -148,7 +148,6 @@ function draw() {
   ctx.fillRect(bird.x, bird.y, bird.w, bird.h);
   ctx.restore();
 
-  // Speech bubble
   if (storyState.bubble) {
     ctx.fillStyle = "rgba(255,255,255,0.9)";
     ctx.font = "12px Orbitron";
@@ -195,18 +194,38 @@ function showGameOver() {
   ctx.font = "20px Orbitron";
   ctx.fillText("Tap to Restart", W / 2, H / 2 + 10);
   ctx.shadowBlur = 0;
-
   leaderboardBtn.style.display = "block";
 }
 
+// Save only if score is higher
 function saveScore(score) {
-  const record = { name: playerName, score };
-  if (window.firebaseDatabase && window.firebaseRef && window.firebasePush) {
-    const db = window.firebaseDatabase;
-    const ref = window.firebaseRef;
-    const push = window.firebasePush;
-    push(ref(db, "leaderboard"), record);
-  }
+  if (!window.firebaseDatabase || !window.firebaseRef) return;
+
+  const db = window.firebaseDatabase;
+  const ref = window.firebaseRef;
+  const userRef = ref(db, "leaderboard");
+
+  import("https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js").then(({ get, push, set, child }) => {
+    get(userRef).then(snapshot => {
+      const data = snapshot.val() || {};
+      let foundKey = null;
+      let existingScore = 0;
+
+      for (const key in data) {
+        if (data[key].name === playerName) {
+          foundKey = key;
+          existingScore = data[key].score;
+          break;
+        }
+      }
+
+      if (foundKey && score > existingScore) {
+        set(child(userRef, foundKey), { name: playerName, score });
+      } else if (!foundKey) {
+        push(userRef, { name: playerName, score });
+      }
+    });
+  });
 }
 
 canvas.addEventListener("click", flap);
@@ -216,4 +235,3 @@ leaderboardBtn.addEventListener("click", () => {
 
 reset();
 loop();
-      
