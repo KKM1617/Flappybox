@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leaderboard</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      text-shadow: 0 0 10px #0ff;
+    }
+    ol {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+      font-size: 18px;
+      text-shadow: 0 0 5px #0ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Top Scores</h1>
+  <ol id="leaderboardList"></ol>
+
+  <script>
+    const scores = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    const list = document.getElementById("leaderboardList");
+    scores.forEach((s, i) => {
+      const li = document.createElement("li");
+      li.textContent = `${i + 1}. Score: ${s}`;
+      list.appendChild(li);
+    });
+  </script>
+</body>
+</html>
